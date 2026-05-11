@@ -2,10 +2,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from dataclasses import dataclass
-
-
 # ===================== CONFIG =====================
-
 @dataclass
 class TrainingConfig:
     epochs: int = 20
