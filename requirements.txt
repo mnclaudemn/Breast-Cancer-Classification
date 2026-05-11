@@ -1,1 +1,18 @@
 
+---
+
+## Requirements
+- Python 3.8+
+- PyTorch
+- torchvision
+- numpy
+- matplotlib
+- scikit-learn
+
+---
+
+## Installation
+```bash
+git clone https://github.com/mnclaudemn/Breast-Cancer-Classification
+cd Breast-Cancer-Classification
+pip install -r requirements.txt
