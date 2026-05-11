@@ -1,7 +1,7 @@
-# Breast Cancer Classification using ResNet + Transformer
+# Brain Tumor Classification using ResNet + Transformer
 
 ## Overview
-This project implements a binary image classification model for breast cancer detection (benign vs malignant). The architecture combines a pretrained ResNet50 convolutional backbone with a Transformer encoder to capture both local and global image features.
+This project implements a binary image classification model for brain tumor classification (benign vs malignant). The architecture combines a pretrained ResNet50 convolutional backbone with a Transformer encoder to capture both local and global image features.
 
 ---
 
