@@ -47,10 +47,14 @@ class PositionalEncoding(nn.Module):
     def __init__(self, dim, max_len=2048):
         super().__init__()
         self.pos_embed = nn.Parameter(torch.randn(1, max_len, dim) * 0.02)
-
+  
     def forward(self, x):
-        return x + self.pos_embed[:, :x.size(1), :]
+        # safety: prevent overflow if tokens > 1000
+        seq_len = x.size(1)
+        if seq_len > self.pos_embed.size(1):
+            raise ValueError("Sequence length exceeds positional encoding limit")
 
+        return x + self.pos_embed[:, :seq_len, :]
 
 # ----------------------------
 # 4. Hybrid CNN-Transformer Model
