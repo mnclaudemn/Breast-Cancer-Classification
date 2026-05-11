@@ -2,7 +2,6 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
 from PIL import Image
-import os
 # ===================== TRANSFORMS =====================
 def get_transforms(train=True):
     if train:
@@ -12,23 +11,26 @@ def get_transforms(train=True):
             transforms.RandomRotation(10),
             transforms.ColorJitter(brightness=0.1, contrast=0.1),
             transforms.ToTensor(),
-            transforms.Normalize(mean=[0.5], std=[0.5])
+            transforms.Normalize(mean=[0.5, 0.5, 0.5],
+                                 std=[0.5, 0.5, 0.5])
         ])
     else:
         return transforms.Compose([
             transforms.Resize((224, 224)),
             transforms.ToTensor(),
-            transforms.Normalize(mean=[0.5], std=[0.5])
+            transforms.Normalize(mean=[0.5, 0.5, 0.5],
+                                 std=[0.5, 0.5, 0.5])
         ])
 
 
 # ===================== DATASET =====================
-
-class BreastCancerDataset(Dataset):
+class BrainTumorDataset(Dataset):
     """
-    Binary classification dataset:
-    - 0: benign
-    - 1: malignant
+    Multiclass classification:
+    0: glioma
+    1: meningioma
+    2: pituitary
+    3: no_tumor
     """
 
     def __init__(self, image_paths, labels, transform=None):
@@ -51,24 +53,16 @@ class BreastCancerDataset(Dataset):
         return image, torch.tensor(label, dtype=torch.long)
 
 
-# ===================== DATA LOADER BUILDER =====================
-
+# ===================== DATALOADER =====================
 def create_dataloaders(train_data, val_data, batch_size=32, num_workers=2):
-    """
-    train_data / val_data format:
-    {
-        "images": [...paths...],
-        "labels": [...]
-    }
-    """
 
-    train_dataset = BreastCancerDataset(
+    train_dataset = BrainTumorDataset(
         train_data["images"],
         train_data["labels"],
         transform=get_transforms(train=True)
     )
 
-    val_dataset = BreastCancerDataset(
+    val_dataset = BrainTumorDataset(
         val_data["images"],
         val_data["labels"],
         transform=get_transforms(train=False)
