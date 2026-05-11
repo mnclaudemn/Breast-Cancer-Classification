@@ -4,23 +4,45 @@ import torchvision.models as models
 # ----------------------------
 # 1. CNN Backbone (ResNet50)
 # ----------------------------
-class ResNetBackbone(nn.Module):
-    """
-    CNN feature extractor using pretrained ResNet50.
-    Removes classification head and global pooling.
-    """
-    def __init__(self):
+def __init__(self, freeze=True, unfreeze_last_n=0):
         super().__init__()
+
+        # Load full ResNet (important for proper layer control)
         resnet = models.resnet50(weights=models.ResNet50_Weights.DEFAULT)
 
-        # Remove avgpool and fc layer
+        # Remove classification head
         self.backbone = nn.Sequential(*list(resnet.children())[:-2])
 
+        # ----------------------------
+        # STEP 1: freeze all layers
+        # ----------------------------
+        if freeze:
+            for param in self.backbone.parameters():
+                param.requires_grad = False
+
+        # ----------------------------
+        # STEP 2: unfreeze last N RESNET STAGES (correct way)
+        # ----------------------------
+        if unfreeze_last_n > 0:
+
+            full_resnet = models.resnet50(weights=None)
+
+            stage_names = ["layer1", "layer2", "layer3", "layer4"]
+            stages_to_unfreeze = stage_names[-unfreeze_last_n:]
+
+            for name, module in full_resnet.named_children():
+                if name in stages_to_unfreeze:
+                    for param in module.parameters():
+                        param.requires_grad = True
+
+            # apply unfreeze to our backbone correctly
+            for name, module in self.backbone.named_children():
+                if name in stages_to_unfreeze:
+                    for param in module.parameters():
+                        param.requires_grad = True
+
     def forward(self, x):
-        # (B, 3, H, W) → (B, 2048, H/32, W/32)
         return self.backbone(x)
-
-
 # ----------------------------
 # 2. Feature Tokenization
 # ----------------------------
